@@ -5,6 +5,7 @@ using UnityEngine;
 public class playerController : MonoBehaviour
 {
 
+    private GameController _GameController;
     private Rigidbody2D playerRb;
     private Animator  playerAnimator;
     public float speed;
@@ -12,7 +13,9 @@ public class playerController : MonoBehaviour
     public bool isLookingLeft;
     public Transform groundCheck;
     private bool isGrounded;
-    public bool isAttack;
+    private bool isAttack;
+    public GameObject hitBoxPrefab;
+    public Transform mao;
 
     // Start is called before the first frame update
     void Start()
@@ -20,7 +23,8 @@ public class playerController : MonoBehaviour
 
         playerRb = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
-        
+        _GameController = FindObjectOfType(typeof(GameController)) as GameController;
+        _GameController.playerTransform = this.transform;
     }
 
     // Update is called once per frame
@@ -28,7 +32,11 @@ public class playerController : MonoBehaviour
     {
 
         float h = Input.GetAxisRaw("Horizontal");
-        
+
+        if(isAttack == true && isGrounded == true){
+            h=0;
+        }
+
         if(h > 0 && isLookingLeft == true){
             Flip();
         }else if(h < 0 && isLookingLeft == false){
@@ -43,7 +51,8 @@ public class playerController : MonoBehaviour
             playerRb.AddForce(new Vector2(0,jumpForce));
         }
 
-        if(Input.GetButtonDown("Fire1")){
+        if(Input.GetButtonDown("Fire1") && isAttack == false){
+            isAttack = true;
             playerAnimator.SetTrigger("attack");
         }
 
@@ -52,7 +61,7 @@ public class playerController : MonoBehaviour
         playerAnimator.SetInteger("h",(int) h);
         playerAnimator.SetBool("isGrounded",isGrounded);
         playerAnimator.SetFloat("speedY",speedY); 
-        
+        playerAnimator.SetBool("isAttack",isAttack);
     }
 
     void FixedUpdate(){
@@ -64,4 +73,15 @@ public class playerController : MonoBehaviour
         float x = transform.localScale.x * -1;
         transform.localScale = new Vector3(x,transform.localScale.y,transform.localScale.z);
     }
+
+    void OnEndAttack(){
+        isAttack = false;
+    }
+
+    void hitBoxAttack(){
+
+        GameObject hitBoxTemp = Instantiate(hitBoxPrefab,mao.position, transform.localRotation);
+        Destroy(hitBoxTemp,0.2f);
+    }
+
 }
