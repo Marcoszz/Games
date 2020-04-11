@@ -39,6 +39,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: BackGround
+    uniqueID: 3758789879
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: PrimeiroPlano
+    uniqueID: 3180146173
     locked: 0
